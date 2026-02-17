@@ -1,0 +1,12 @@
+[dlubal]
+# Your Dlubal API key from https://www.dlubal.com/extranet
+# Go to Profile → API Keys → Generate new key
+api_key = ak-f2860d3b230c4fc7a7d9d62f335141e4ee5d8a81f6d64251
+
+[server]
+# RFEM server address (default: localhost:8081)
+address = localhost:8081
+
+[paths]
+# RFEM installation path
+rfem_path = C:\Program Files\Dlubal\RFEM 6

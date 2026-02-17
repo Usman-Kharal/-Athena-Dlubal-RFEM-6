@@ -1,0 +1,50 @@
+{
+  "model_info": {
+    "block_type": "Parabolic Truss Bridge",
+    "dimension": "3D",
+    "created_by": "OpenAI Structural Agent"
+  },
+  "parameters": {
+    "n": 6,
+    "input_via": "define_L1",
+    "L": 50,
+    "L_1": 50,
+    "L_2": 50,
+    "H": 1.5,
+    "H_1": 1.5
+  },
+  "materials": [
+    {
+      "name": "Top chord",
+      "id": 1,
+      "description": "Cross-section for the top chord members"
+    },
+    {
+      "name": "Bottom chord",
+      "id": 2,
+      "description": "Cross-section for the bottom chord members"
+    },
+    {
+      "name": "Diagonals",
+      "id": 3,
+      "description": "Cross-section for diagonal bracing members"
+    },
+    {
+      "name": "Verticals",
+      "id": 4,
+      "description": "Cross-section for vertical members"
+    }
+  ],
+  "supports": [
+    {
+      "id": 1,
+      "name": "Nodal support - left",
+      "description": "Support at the left end"
+    },
+    {
+      "id": 2,
+      "name": "Nodal support - right",
+      "description": "Support at the right end"
+    }
+  ]
+}

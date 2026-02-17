@@ -1,0 +1,142 @@
+{
+    "name": "Parabolic Truss Bridge",
+    "description": "Generates a parabolic arch truss bridge structure with configurable bays, supports, and curved top chord.",
+    "categories": [
+        "Geometry",
+        "Materials & Sections",
+        "Supports"
+    ],
+    "parameters": [
+        {
+            "name": "n",
+            "label": "Number of bays",
+            "type": "integer",
+            "default": 6,
+            "unit": "NONE",
+            "min": 2,
+            "max": 50,
+            "step": 2,
+            "category": "Geometry",
+            "conditions": [
+                "n % 2 == 0"
+            ]
+        },
+        {
+            "name": "input_via",
+            "label": "Input via",
+            "type": "combobox",
+            "default": "define_L1",
+            "options": [
+                {
+                    "label": "L and L1",
+                    "value": "define_L1"
+                },
+                {
+                    "label": "L and L2",
+                    "value": "define_L2"
+                },
+                {
+                    "label": "L1 and L2",
+                    "value": "define_L1_L2"
+                }
+            ],
+            "category": "Geometry"
+        },
+        {
+            "name": "L",
+            "label": "Total length",
+            "type": "float",
+            "default": 12.0,
+            "unit": "LENGTH",
+            "min": 0.1,
+            "max": 50.0,
+            "category": "Geometry",
+            "visible_if": "input_via == 'define_L1' || input_via == 'define_L2'"
+        },
+        {
+            "name": "L_1",
+            "label": "Length of outer bays (L1)",
+            "type": "float",
+            "default": 2.0,
+            "unit": "LENGTH",
+            "min": 0.1,
+            "max": 50.0,
+            "category": "Geometry",
+            "visible_if": "input_via == 'define_L1' || input_via == 'define_L1_L2'"
+        },
+        {
+            "name": "L_2",
+            "label": "Length of inner bays (L2)",
+            "type": "float",
+            "default": 2.0,
+            "unit": "LENGTH",
+            "min": 0.1,
+            "max": 50.0,
+            "category": "Geometry",
+            "visible_if": "input_via == 'define_L2' || input_via == 'define_L1_L2'"
+        },
+        {
+            "name": "H",
+            "label": "Height of curve",
+            "type": "float",
+            "default": 1.5,
+            "unit": "LENGTH",
+            "min": 0.0,
+            "max": 50.0,
+            "category": "Geometry"
+        },
+        {
+            "name": "H_1",
+            "label": "Height",
+            "type": "float",
+            "default": 1.5,
+            "unit": "LENGTH",
+            "min": 0.0,
+            "max": 50.0,
+            "category": "Geometry"
+        },
+        {
+            "name": "section_top_chord",
+            "label": "Top chord",
+            "type": "section",
+            "id": 1,
+            "category": "Materials & Sections"
+        },
+        {
+            "name": "section_bottom_chord",
+            "label": "Bottom chord",
+            "type": "section",
+            "id": 2,
+            "category": "Materials & Sections"
+        },
+        {
+            "name": "section_diagonals",
+            "label": "Diagonals",
+            "type": "section",
+            "id": 3,
+            "category": "Materials & Sections"
+        },
+        {
+            "name": "section_verticals",
+            "label": "Verticals",
+            "type": "section",
+            "id": 4,
+            "category": "Materials & Sections"
+        },
+        {
+            "name": "support_left",
+            "label": "Nodal support - left",
+            "type": "nodal_support",
+            "id": 1,
+            "category": "Supports"
+        },
+        {
+            "name": "support_right",
+            "label": "Nodal support - right",
+            "type": "nodal_support",
+            "id": 2,
+            "category": "Supports"
+        }
+    ],
+    "script": "function generate() {\n  var calculated_parameters = {};\n\n  ASSERT(n % 2 == 0,\"Number of bays must be even\");\n \n  if (input_via == \"define_L1\")\n    {\n       L_2 = (L - 2*L_1)/(n - 2);\n    }\n  else if (input_via == \"define_L2\")\n    {\n      L_1 = (L - (n - 2)*L_2)/2\n    }\n  else\n    {\n      L = (n - 2)*L_2 + 2*L_1\n    }\n\n  calculated_parameters[\"L_1\"] = L_1;\n  calculated_parameters[\"L_2\"] = L_2;\n  calculated_parameters[\"L\"] = L;\n \n  var member_set_bot = [];\n  var member_set_top = [];\n\n  // Create structure\n  // create nodes (n+1)\n  for (var i = 0; i < 2*n + 2; ++i)\n    {\n      Node(i)\n    }\n  nodes[0      ].coordinates = $V(0.000,  0.000,                                   0.000);  //  nodes of bottom chord\n  for (var i = 1; i < n; ++i)\n    {\n      x = L_1 + (i - 1)*L_2;\n      nodes[i  ].coordinates = $V(x,      0.000,                                   0.000);\n    }\n  nodes[n      ].coordinates = $V(L,      0.000,                                   0.000);\n\n  nodes[n + 1  ].coordinates = $V(0.000,  0.000,                                     - H);  // nodes of upper chord\n  for (var i = n + 2; i < 2*n + 1; ++i)\n    {\n      x = L_1 + (i - n - 2)*L_2;\n      nodes[i  ].coordinates = $V(x,      0.000,  -H_1*(1 - (sqr(x - L/2))/sqr(L/2)) - H);\n    }\n  nodes[2*n + 1].coordinates = $V(L,      0.000,                                     - H);\n \n  // Creating member\n  for (var i = 0; i < n ; ++i)                                 // bottom chord\n  {\n    Member(i, [i,                  i + 1]);\n    members[i].section_start = sections[2];\n    members[i].rotation_angle = PI;\n    member_set_bot.push(i);\n  }\n\n  var hinges_params_1 = \n  {\n    \"moment_release_mt\": model.member_hinges.SPRING_CONSTANT_NO,\n    \"moment_release_mz\": model.member_hinges.SPRING_CONSTANT_NO,\n    \"axial_release_n\":   model.member_hinges.SPRING_CONSTANT_NO,\n    \"axial_release_vy\":  model.member_hinges.SPRING_CONSTANT_NO,\n    \"axial_release_vz\":  model.member_hinges.SPRING_CONSTANT_NO\n  }\n  \n  var member_hinge = MemberHinge(undefined, undefined, undefined, \"\", hinges_params_1);\n  \n  var j = n;\n  for (var i = 0; i <n + 1 ; ++i)                              // verticals\n  {                                                  \n    var member = Member(j,[i,               n + i + 1]);\n    members[j].section_start = sections[4];\n    member.member_hinge_start = member_hinge;\n    member.member_hinge_end = member_hinge;\n\n    j = j + 1;\n  }\n\n  Member(j, [n + 1, n + 2]);                                   // create the first bay of top chord\n  members[j].section_start = sections[1];\n    \n  lines[j].type = model.lines.TYPE_PARABOLA;\n  lines[j].parabola_first_node = nodes[n + 1];\n  lines[j].parabola_control_point = $V(L_1/2,   0.000,   -H_1*(1 - (sqr(L_1/2 - L/2))/sqr(L/2)) - H);\n  lines[j].parabola_second_node = nodes[n + 2]; \n  member_set_top.push(j);\n  j = j + 1;\n\n  for (var i = 0; i < n - 2; ++i)                              // top chord\n  { \n    Member(j,[n + i + 2,       n + i + 3]);\n    members[j].section_start = sections[1];\n\n    lines[j].type = model.lines.TYPE_PARABOLA;\n    lines[j].parabola_first_node = nodes[n + i + 2];\n    x = L_1 + L_2/2 + i*L_2;\n    lines[j].parabola_control_point = $V(x,   0.000,      -H_1*(1 - (sqr(x - L/2))/sqr(L/2)) - H);\n    lines[j].parabola_second_node = nodes[n + i + 3]; \n    member_set_top.push(j);\n    j = j + 1;\n  }\n\n  Member(j, [2*n ,             2*n + 1]);                      // create the last bay of top chord\n  members[j].section_start = sections[1];\n   \n  lines[j].type = model.lines.TYPE_PARABOLA;\n  lines[j].parabola_first_node = nodes[2*n];\n  lines[j].parabola_control_point = $V(L - L_1/2,    0.000,    -H_1*(1 - (sqr(L/2 - L_1/2))/sqr(L/2)) - H);\n  lines[j].parabola_second_node = nodes[2*n + 1]; \n  member_set_top.push(j);\n  j = j + 1;\n\n  if (n/2 % 2 == 1)                                            // diagonals\n  {\n    for (var i = 0; i < n/2; ++i)\n    {\n      member = Member(j,    [2*i,           n + 2*i + 2]);\n      members[j    ].section_start = sections[3];\n      member.member_hinge_start = member_hinge;\n      member.member_hinge_end = member_hinge;\n\n      member = Member(j + 1,[2*i + 2,       n + 2*i + 2]);\n      members[j + 1].section_start = sections[3];\n      member.member_hinge_start = member_hinge;\n      member.member_hinge_end = member_hinge;\n  \n      j = j + 2;\n    }\n  }\n  else \n  {\n    for (var i = 0; i < n/2 ; ++i)\n    {\n      member = Member(j,    [2*i + 1,       n + 2*i + 1]);\n      members[j    ].section_start = sections[3];\n      member.member_hinge_start = member_hinge;\n      member.member_hinge_end = member_hinge;\n      \n      member = Member(j + 1,[2*i + 1,       n + 2*i + 3]);\n      members[j + 1].section_start = sections[3];\n      member.member_hinge_start = member_hinge;\n      member.member_hinge_end = member_hinge;\n    \n      j = j + 2;\n    }\n  }\n  \n  MemberSet(1, member_set_bot, \"Bottom chord\");\n  MemberSet(2, member_set_top, \"Top chord\");\n    \n  nodes[0].support = nodal_supports[1];\n  nodes[n].support = nodal_supports[2];\n\n  var coordinate_system_params_1 =\n  {\n      \"origin_coordinates\":         [0.000,  0.000,  0.000],\n      \"u_axis_point_coordinates\":   [1    ,  0.000,  0.000],\n      \"uw_plane_point_coordinates\": [0.000,  0.000,  1    ]\n  }\n  CoordinateSystem(1, model.coordinate_systems.TYPE_3_POINTS, undefined, coordinate_system_params_1);\n\n  var linear_dimension_params_1 =\n  {\n      \"linear_coordinate_system\": coordinate_systems[1],\n  };\n  \n  for (var i = 0; i < n - 2; ++i)\n  {\n    LinearDimension(i,   nodes[i + 1], nodes[i + 2    ], \"xz\", \"L2\",     1, \"\", linear_dimension_params_1);\n  }\n  LinearDimension(n - 2, nodes[0    ], nodes[1        ], \"xz\", \"L1\",     1, \"\", linear_dimension_params_1);\n  LinearDimension(n - 1, nodes[n - 1], nodes[n        ], \"xz\", \"L1\",     1, \"\", linear_dimension_params_1);\n  LinearDimension(n,     nodes[0    ], nodes[n        ], \"xz\", \"L\",               1.5, \"\", linear_dimension_params_1);\n\n  LinearDimension(n + 1, nodes[n + 1], nodes[1.5*n + 1], \"zx\", \"H1\",    -1, \"\", linear_dimension_params_1);\n  LinearDimension(n + 2, nodes[0    ], nodes[n + 1    ], \"zx\", \"H\",                -1, \"\", linear_dimension_params_1);\n\n  return calculated_parameters;\n}"
+}

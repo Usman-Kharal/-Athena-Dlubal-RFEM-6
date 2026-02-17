@@ -1,0 +1,864 @@
+{
+    "library": "2D",
+    "version": "1.0",
+    "elements": [
+        {
+            "id": "000591",
+            "name": "Curved Ridge Beam (2D)",
+            "dimensionality": "2D",
+            "main_member": "beam",
+            "material": "wood",
+            "metadata": {
+                "description": "A parametric timber or steel ridge beam with a curved bottom chord and optional end cantilevers. Modeled as a 2D surface.",
+                "tags": [
+                    "beam",
+                    "roof",
+                    "timber",
+                    "glulam",
+                    "curved",
+                    "cantilever"
+                ],
+                "classification": {
+                    "structure_class": "Surface / Plate",
+                    "geometry_source": "Parametric Arc"
+                },
+                "visual_aids": {
+                    "geometry_overview": "",
+                    "cantilever_detail": ""
+                }
+            },
+            "inputs": {
+                "options": {
+                    "wedge_included": {
+                        "label": "Include Ridge Wedge",
+                        "type": "boolean",
+                        "default": false,
+                        "description": "Models the extra stiffening wedge at the peak of the beam."
+                    }
+                },
+                "main_geometry": {
+                    "L": {
+                        "label": "Total Beam Length",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 10
+                    },
+                    "h": {
+                        "label": "Beam Height (Eave)",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 1
+                    },
+                    "h_ap": {
+                        "label": "Beam Height (Ridge)",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 1,
+                        "description": "Height at the apex (center) of the beam."
+                    },
+                    "delta": {
+                        "label": "Roof Pitch (Angle)",
+                        "type": "float",
+                        "unit": "UNIT.ANGLE",
+                        "default_expression": "PI / 18",
+                        "visual_role": "Slope Angle"
+                    },
+                    "R": {
+                        "label": "Bottom Chord Radius",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 15
+                    }
+                },
+                "cantilever_geometry": {
+                    "k": {
+                        "label": "Cantilever Length",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 1
+                    },
+                    "delta_s": {
+                        "label": "Cantilever End Angle",
+                        "type": "float",
+                        "unit": "UNIT.ANGLE",
+                        "default_expression": "PI / 18"
+                    },
+                    "delta_k": {
+                        "label": "Cantilever Bottom Angle",
+                        "type": "float",
+                        "unit": "UNIT.ANGLE",
+                        "default_expression": "PI / 18"
+                    }
+                }
+            }
+        },
+        {
+            "id": "001637",
+            "name": "Bowstring Truss",
+            "dimensionality": "2D",
+            "main_member": "truss",
+            "material": "steel",
+            "metadata": {
+                "description": "A 2D truss with a curved top chord and straight bottom chord. Features variable bay lengths defined by three specific input modes.",
+                "tags": [
+                    "truss",
+                    "steel",
+                    "roof",
+                    "bowstring",
+                    "curved"
+                ],
+                "classification": {
+                    "structure_class": "Truss / Lattice",
+                    "geometry_source": "Parametric Arc"
+                },
+                "visual_aids": {
+                    "structure_diagram": "",
+                    "bay_definition": ""
+                }
+            },
+            "inputs": {
+                "topology": {
+                    "n": {
+                        "label": "Number of bays",
+                        "type": "int",
+                        "default": 6,
+                        "constraints": {
+                            "min": 2,
+                            "max": 50,
+                            "step": 2,
+                            "must_be_even": true
+                        }
+                    }
+                },
+                "selection_modes": {
+                    "parameter_name": "input_via",
+                    "label": "Input Definition Mode",
+                    "options": {
+                        "define_L1": {
+                            "label": "Define Total Length & Outer Bays",
+                            "required_inputs": [
+                                "L",
+                                "L_1"
+                            ],
+                            "calculated_outputs": [
+                                "L_2"
+                            ]
+                        },
+                        "define_L2": {
+                            "label": "Define Total Length & Inner Bays",
+                            "required_inputs": [
+                                "L",
+                                "L_2"
+                            ],
+                            "calculated_outputs": [
+                                "L_1"
+                            ]
+                        },
+                        "define_L1_L2": {
+                            "label": "Define All Bay Lengths",
+                            "required_inputs": [
+                                "L_1",
+                                "L_2"
+                            ],
+                            "calculated_outputs": [
+                                "L"
+                            ]
+                        }
+                    }
+                },
+                "geometry": {
+                    "H": {
+                        "label": "Truss Height",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 3
+                    },
+                    "L": {
+                        "label": "Total Length",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 12,
+                        "dependency": "input_via != 'define_L1_L2'"
+                    },
+                    "L_1": {
+                        "label": "Length of Outer Bays",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 2,
+                        "dependency": "input_via != 'define_L2'"
+                    },
+                    "L_2": {
+                        "label": "Length of Inner Bays",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 2,
+                        "dependency": "input_via != 'define_L1'"
+                    }
+                }
+            }
+        },
+        {
+            "id": "001671",
+            "name": "Fish-Bellied Parallel Truss",
+            "dimensionality": "2D",
+            "main_member": "truss",
+            "material": "steel",
+            "metadata": {
+                "description": "Parametric 2D truss where both chords curve downwards. The top chord is parallel to the bottom chord.",
+                "tags": [
+                    "truss",
+                    "steel",
+                    "bridge",
+                    "curved",
+                    "inverted-arch"
+                ],
+                "classification": {
+                    "element_type": "Member",
+                    "topology_type": "Lattice"
+                },
+                "visual_aids": {
+                    "diagram": "",
+                    "sag_definition": ""
+                }
+            },
+            "inputs": {
+                "selection_modes": {
+                    "parameter_name": "input_via",
+                    "label": "Input Definition Mode",
+                    "options": {
+                        "define_L1": {
+                            "label": "Define Total Length & Outer Bays",
+                            "active_inputs": [
+                                "L",
+                                "L_1",
+                                "n",
+                                "H",
+                                "H_1"
+                            ],
+                            "calculated": [
+                                "L_2"
+                            ]
+                        },
+                        "define_L2": {
+                            "label": "Define Total Length & Inner Bays",
+                            "active_inputs": [
+                                "L",
+                                "L_2",
+                                "n",
+                                "H",
+                                "H_1"
+                            ],
+                            "calculated": [
+                                "L_1"
+                            ]
+                        },
+                        "define_L1_L2": {
+                            "label": "Define All Bay Lengths",
+                            "active_inputs": [
+                                "L_1",
+                                "L_2",
+                                "n",
+                                "H",
+                                "H_1"
+                            ],
+                            "calculated": [
+                                "L"
+                            ]
+                        }
+                    }
+                },
+                "parameters": {
+                    "n": {
+                        "label": "Number of bays",
+                        "type": "int",
+                        "default": 8,
+                        "constraints": {
+                            "min": 2,
+                            "max": 50,
+                            "step": 2,
+                            "must_be_even": true
+                        }
+                    },
+                    "L": {
+                        "label": "Total length",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 8,
+                        "dependency": "input_via != 'define_L1_L2'"
+                    },
+                    "L_1": {
+                        "label": "Length of outer bays",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 1
+                    },
+                    "L_2": {
+                        "label": "Length of inner bays",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 1
+                    },
+                    "H": {
+                        "label": "Truss height (Depth)",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 1.2,
+                        "description": "The constant vertical distance between the top and bottom chord."
+                    },
+                    "H_1": {
+                        "label": "Bottom chord sag",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 1.0,
+                        "description": "The vertical distance from the support line to the lowest point of the curve."
+                    }
+                }
+            }
+        },
+        {
+            "id": "001788",
+            "name": "Standard Pitched Fish-Belly Truss",
+            "dimensionality": "2D",
+            "main_member": "truss",
+            "material": "steel",
+            "metadata": {
+                "description": "A 2D truss combining a pitched (gable) top chord with a curved (arc) bottom chord. Features variable bay lengths and configurable end/center heights.",
+                "tags": [
+                    "truss",
+                    "steel",
+                    "roof",
+                    "gable",
+                    "curved-bottom",
+                    "pitched"
+                ],
+                "classification": {
+                    "structure_class": "Truss / Lattice",
+                    "geometry_source": "Hybrid (Linear Top / Curved Bottom)"
+                },
+                "visual_aids": {
+                    "geometry_diagram": "",
+                    "height_definitions": ""
+                }
+            },
+            "inputs": {
+                "topology": {
+                    "n": {
+                        "label": "Number of bays",
+                        "type": "int",
+                        "default": 8,
+                        "constraints": {
+                            "min": 2,
+                            "must_be_even": true
+                        }
+                    }
+                },
+                "selection_modes": {
+                    "parameter_name": "input_via",
+                    "label": "Input Definition Mode",
+                    "options": {
+                        "define_L1": {
+                            "label": "Define L & L1",
+                            "active_inputs": [
+                                "L",
+                                "L_1"
+                            ]
+                        },
+                        "define_L2": {
+                            "label": "Define L & L2",
+                            "active_inputs": [
+                                "L",
+                                "L_2"
+                            ]
+                        },
+                        "define_L1_L2": {
+                            "label": "Define L1 & L2",
+                            "active_inputs": [
+                                "L_1",
+                                "L_2"
+                            ]
+                        }
+                    }
+                },
+                "vertical_geometry": {
+                    "H": {
+                        "label": "Ridge Height (Total)",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 1.2,
+                        "description": "Height from the base line to the top peak (ridge) of the truss."
+                    },
+                    "H_2": {
+                        "label": "Eave Height (Ends)",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 2,
+                        "description": "Height of the vertical posts at the far left and right ends."
+                    },
+                    "H_1": {
+                        "label": "Bottom Chord Sag/Camber",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 1,
+                        "description": "Vertical distance defining the curvature of the bottom chord at the center."
+                    }
+                },
+                "horizontal_geometry": {
+                    "L": {
+                        "label": "Total Length",
+                        "default": 8
+                    },
+                    "L_1": {
+                        "label": "Outer Bay Length",
+                        "default": 1
+                    },
+                    "L_2": {
+                        "label": "Inner Bay Length",
+                        "default": 1
+                    }
+                }
+            }
+        },
+        {
+            "id": "001960",
+            "name": "Bowstring (Stub) Truss",
+            "dimensionality": "2D",
+            "main_member": "truss",
+            "material": "steel",
+            "metadata": {
+                "description": "A 2D truss combining a pitched (gable) top chord with a curved (arc) bottom chord. Features variable bay lengths and configurable end/center heights.",
+                "tags": [
+                    "truss",
+                    "steel",
+                    "roof",
+                    "gable",
+                    "curved-bottom",
+                    "pitched"
+                ],
+                "classification": {
+                    "structure_class": "Truss / Lattice",
+                    "geometry_source": "Hybrid (Linear Top / Curved Bottom)"
+                },
+                "visual_aids": {
+                    "geometry_diagram": "",
+                    "height_definitions": ""
+                }
+            },
+            "inputs": {
+                "topology": {
+                    "n": {
+                        "label": "Number of bays",
+                        "type": "int",
+                        "default": 8,
+                        "constraints": {
+                            "min": 2,
+                            "must_be_even": true
+                        }
+                    }
+                },
+                "selection_modes": {
+                    "parameter_name": "input_via",
+                    "label": "Input Definition Mode",
+                    "options": {
+                        "define_L1": {
+                            "label": "Define L & L1",
+                            "active_inputs": [
+                                "L",
+                                "L_1"
+                            ]
+                        },
+                        "define_L2": {
+                            "label": "Define L & L2",
+                            "active_inputs": [
+                                "L",
+                                "L_2"
+                            ]
+                        },
+                        "define_L1_L2": {
+                            "label": "Define L1 & L2",
+                            "active_inputs": [
+                                "L_1",
+                                "L_2"
+                            ]
+                        }
+                    }
+                },
+                "vertical_geometry": {
+                    "H": {
+                        "label": "Ridge Height (Total)",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 1.2,
+                        "description": "Height from the base line to the top peak (ridge) of the truss."
+                    },
+                    "H_2": {
+                        "label": "Eave Height (Ends)",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 2,
+                        "description": "Height of the vertical posts at the far left and right ends."
+                    },
+                    "H_1": {
+                        "label": "Bottom Chord Sag/Camber",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 1,
+                        "description": "Vertical distance defining the curvature of the bottom chord at the center."
+                    }
+                },
+                "horizontal_geometry": {
+                    "L": {
+                        "label": "Total Length",
+                        "default": 8
+                    },
+                    "L_1": {
+                        "label": "Outer Bay Length",
+                        "default": 1
+                    },
+                    "L_2": {
+                        "label": "Inner Bay Length",
+                        "default": 1
+                    }
+                }
+            }
+        },
+        {
+            "id": "001976",
+            "name": "Fish-Bellied Truss (Inverted Bowstring Truss)",
+            "dimensionality": "2D",
+            "main_member": "truss",
+            "material": "steel",
+            "metadata": {
+                "description": "A 2D truss combining a linear pitched (gable) top chord with a curved (arc) bottom chord. Features variable bay lengths and configurable eave/ridge heights.",
+                "tags": [
+                    "truss",
+                    "steel",
+                    "roof",
+                    "gable",
+                    "curved-bottom",
+                    "pitched"
+                ],
+                "classification": {
+                    "structure_class": "Truss / Lattice",
+                    "geometry_source": "Hybrid (Linear Top / Curved Bottom)"
+                },
+                "visual_aids": {
+                    "geometry_diagram": "",
+                    "height_definitions": ""
+                }
+            },
+            "inputs": {
+                "topology": {
+                    "n": {
+                        "label": "Number of bays",
+                        "type": "int",
+                        "default": 6,
+                        "constraints": {
+                            "min": 4,
+                            "must_be_even": true
+                        }
+                    }
+                },
+                "selection_modes": {
+                    "parameter_name": "input_via",
+                    "label": "Input Definition Mode",
+                    "options": {
+                        "define_L1": {
+                            "label": "Define L & L1",
+                            "active_inputs": [
+                                "L",
+                                "L_1"
+                            ]
+                        },
+                        "define_L2": {
+                            "label": "Define L & L2",
+                            "active_inputs": [
+                                "L",
+                                "L_2"
+                            ]
+                        },
+                        "define_L1_L2": {
+                            "label": "Define L1 & L2",
+                            "active_inputs": [
+                                "L_1",
+                                "L_2"
+                            ]
+                        }
+                    }
+                },
+                "vertical_geometry": {
+                    "H": {
+                        "label": "Total Ridge Height",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 4,
+                        "description": "The absolute height from the zero-level to the highest point (ridge) of the top chord."
+                    },
+                    "H_2": {
+                        "label": "Eave Height (Outer Bays)",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 2,
+                        "description": "The vertical height of the truss at the supports (ends)."
+                    },
+                    "H_1": {
+                        "label": "Bottom Chord Sag (Camber)",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 1,
+                        "description": "The vertical depth of the bottom chord's curvature relative to the supports."
+                    }
+                },
+                "horizontal_geometry": {
+                    "L": {
+                        "label": "Total Length",
+                        "default": 12,
+                        "unit": "UNIT.LENGTH"
+                    },
+                    "L_1": {
+                        "label": "Outer Bay Length",
+                        "default": 2,
+                        "unit": "UNIT.LENGTH"
+                    },
+                    "L_2": {
+                        "label": "Inner Bay Length",
+                        "default": 2,
+                        "unit": "UNIT.LENGTH"
+                    }
+                }
+            }
+        },
+        {
+            "id": "003348",
+            "name": "Multi-Span Arch Structure",
+            "dimensionality": "2D",
+            "main_member": "arch",
+            "material": "steel",
+            "metadata": {
+                "description": "A 2D hanging structure composed of three curved spans (catenary/parabolic style). Features a symmetry toggle to synchronize the outer spans.",
+                "tags": [
+                    "structure",
+                    "steel",
+                    "suspension",
+                    "cable",
+                    "curved",
+                    "multi-span"
+                ],
+                "classification": {
+                    "structure_class": "Arch",
+                    "geometry_source": "Parametric Arc"
+                },
+                "visual_aids": {
+                    "sag_definition": "",
+                    "symmetry_concept": ""
+                }
+            },
+            "inputs": {
+                "options": {
+                    "symmetrical": {
+                        "label": "Make Symmetrical",
+                        "type": "boolean",
+                        "default": false,
+                        "description": "If true, the right side parameters are locked to match the left side."
+                    }
+                },
+                "supports": {
+                    "H": {
+                        "label": "Main Column Height (Center)",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 4,
+                        "description": "Height of the two central columns supporting the main span."
+                    },
+                    "H_1": {
+                        "label": "Left Column Height",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 2.5
+                    },
+                    "H_2": {
+                        "label": "Right Column Height",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 2.5,
+                        "dependency": "symmetrical == false"
+                    }
+                },
+                "curves": {
+                    "H_0": {
+                        "label": "Main Span Sag",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 1.5,
+                        "description": "Vertical drop of the middle curve."
+                    },
+                    "H_01": {
+                        "label": "Left Span Sag",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 1
+                    },
+                    "H_02": {
+                        "label": "Right Span Sag",
+                        "type": "float",
+                        "unit": "UNIT.LENGTH",
+                        "default": 1,
+                        "dependency": "symmetrical == false"
+                    }
+                },
+                "spans": {
+                    "L": {
+                        "label": "Main Span Length",
+                        "default": 6
+                    },
+                    "L_1": {
+                        "label": "Left Span Length",
+                        "default": 4
+                    },
+                    "L_2": {
+                        "label": "Right Span Length",
+                        "default": 4,
+                        "dependency": "symmetrical == false"
+                    }
+                }
+            }
+        },
+        {
+            "id": "004859",
+            "name": "Tapered Portal Frame (2D)",
+            "dimensionality": "2D",
+            "main_member": "frame",
+            "material": "steel",
+            "metadata": {
+                "description": "A rigid steel frame with tapered columns and rafters. Supports Gable, Monopitch, and Flat roof configurations with optional cantilevers.",
+                "tags": [
+                    "frame",
+                    "steel",
+                    "portal",
+                    "tapered",
+                    "warehouse",
+                    "industrial"
+                ],
+                "classification": {
+                    "structure_class": "Rigid Frame",
+                    "geometry_source": "Parametric Linear"
+                },
+                "visual_aids": {
+                    "taper_types": "",
+                    "roof_shapes": ""
+                }
+            },
+            "inputs": {
+                "selection_modes": {
+                    "parameter_name": "roof_shape",
+                    "label": "Roof Configuration",
+                    "options": {
+                        "double_pitch": {
+                            "label": "Duopitch (Gable)",
+                            "active_inputs": [
+                                "H",
+                                "H_c"
+                            ]
+                        },
+                        "single_pitch": {
+                            "label": "Monopitch (Skillion)",
+                            "active_inputs": [
+                                "H_l",
+                                "H_r"
+                            ]
+                        },
+                        "flat": {
+                            "label": "Flat Roof",
+                            "active_inputs": [
+                                "H"
+                            ]
+                        }
+                    }
+                },
+                "geometry": {
+                    "L": {
+                        "label": "Span Width",
+                        "default": 15,
+                        "unit": "UNIT.LENGTH"
+                    },
+                    "H": {
+                        "label": "Eave Height",
+                        "default": 5.5,
+                        "dependency": "roof_shape != 'single_pitch'"
+                    },
+                    "H_c": {
+                        "label": "Ridge Rise",
+                        "default": 2,
+                        "dependency": "roof_shape == 'double_pitch'"
+                    },
+                    "H_l": {
+                        "label": "Left Eave Height",
+                        "default": 3.5,
+                        "dependency": "roof_shape == 'single_pitch'"
+                    },
+                    "H_r": {
+                        "label": "Right Eave Height",
+                        "default": 5.5,
+                        "dependency": "roof_shape == 'single_pitch'"
+                    }
+                },
+                "detailing": {
+                    "taper_column": {
+                        "check": {
+                            "label": "Tapered Columns",
+                            "type": "boolean",
+                            "default": true
+                        },
+                        "type": {
+                            "label": "Alignment",
+                            "options": [
+                                "Inwards",
+                                "Centric",
+                                "Outwards"
+                            ],
+                            "default": "Inwards"
+                        },
+                        "length": {
+                            "label": "Taper Length",
+                            "default": 3
+                        }
+                    },
+                    "taper_rafter": {
+                        "check": {
+                            "label": "Tapered Rafters",
+                            "type": "boolean",
+                            "default": true
+                        },
+                        "type": {
+                            "label": "Alignment",
+                            "options": [
+                                "Inwards",
+                                "Centric",
+                                "Outwards"
+                            ],
+                            "default": "Inwards"
+                        },
+                        "length": {
+                            "label": "Taper Length",
+                            "default": 4
+                        }
+                    },
+                    "cantilevers": {
+                        "check": {
+                            "label": "Eave Cantilevers",
+                            "type": "boolean",
+                            "default": true
+                        },
+                        "c_l": {
+                            "label": "Left Overhang",
+                            "default": 2
+                        },
+                        "c_r": {
+                            "label": "Right Overhang",
+                            "default": 2
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}

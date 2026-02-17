@@ -1,0 +1,53 @@
+:root {
+    /* Backgrounds - Beige/Off-White Paper Theme */
+    --bg-primary: #FDFBF7;
+    /* Soft Paper White */
+    --bg-secondary: #F4F1EA;
+    /* Light Beige for cards/sidebar */
+    --bg-tertiary: #EBE5D9;
+    /* Darker Beige/Tan for headers/inputs */
+
+    /* Text - High Contrast Dark on Light */
+    --text-primary: #2C2825;
+    /* Very Dark Brown/Black */
+    --text-secondary: #5A524A;
+    /* Medium Brown/Grey */
+    --text-muted: #8C8276;
+    /* Muted Taupe */
+    --border-color: #D6CFC2;
+    /* Beige Border */
+
+    /* IBM Color Blind Safe Palette (Adapted for Light Mode Accents) */
+    --ibm-blue: #834D2C;
+    /* Replaced blue with Warm Brown */
+    /* Darkened for light bg */
+    --ibm-purple: #6A4BC7;
+    /* Slightly darker */
+    --ibm-magenta: #DC267F;
+    --ibm-orange: #E6550D;
+    /* Darker Orange */
+    --ibm-gold: #B37D00;
+    /* Darker Gold for text readability */
+
+    /* Functional Colors */
+    --accent-primary: #834D2C;
+    /* Warm Brown requested by user */
+    --accent-secondary: #A67B5B;
+    /* Lighter Brown */
+    --accent-gradient: linear-gradient(135deg, #834D2C 0%, #A67B5B 100%);
+
+    /* Semantic Colors */
+    --success: #6A8E2F;
+    /* Olive Green to match brown theme better than blue */
+    /* Accessible Blue */
+    --warning: var(--ibm-gold);
+    --error: var(--ibm-orange);
+
+    /* UI Effects */
+    --glass-bg: rgba(255, 255, 255, 0.6);
+    /* Frosted Glass for Light Mode */
+    --glass-border: rgba(0, 0, 0, 0.05);
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    /* Softer shadows */
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
