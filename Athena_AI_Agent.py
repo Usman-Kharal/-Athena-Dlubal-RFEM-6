@@ -692,4 +692,5 @@ if __name__ == '__main__':
             daemon=True
         ).start()
     
-    app.run(debug=True, port=PORT)
+    debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+    app.run(debug=debug_mode, port=PORT)
