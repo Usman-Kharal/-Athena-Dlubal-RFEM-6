@@ -1,7 +1,7 @@
 [dlubal]
 # Your Dlubal API key from https://www.dlubal.com/extranet
 # Go to Profile → API Keys → Generate new key
-api_key = ak-f2860d3b230c4fc7a7d9d62f335141e4ee5d8a81f6d64251
+api_key = your_dlubal_api_key_here
 
 [server]
 # RFEM server address (default: localhost:8081)

@@ -123,7 +123,7 @@ Athena: ✅ Code generated! → 2D/001637_generated.JS
      WebServer["Web Server<br/>(Flask / Athena_AI_Agent.py)"]
      CoreLogic["Core Logic Layer<br/>(shared_logic.py)"]
      DB["Block Database<br/>(Class Instance)"]
-     JSONStore[("JSON Files<br/>(Data Persistance)")]
+     JSONStore[("JSON Files<br/>(Data Persistence)")]
      LLM["LLM Provider<br/>(OpenAI API)"]
      FileSystem["File System<br/>(Scripts / Templates)"]
  
