@@ -18,8 +18,8 @@ An AI-powered web application that generates parametric structural block scripts
 ## 📁 Project Structure
 
 ```
-Dlubal_RFEM_db/
-├── web_server.py          # Flask API server (main entry point)
+RFEM-Block-Generator/
+├── Athena_AI_Agent.py     # Flask API server (main entry point)
 ├── shared_logic.py        # Core logic: LLM, database, JS manipulator
 ├── templates/
 │   └── index.html         # Chat-based web UI
@@ -30,9 +30,10 @@ Dlubal_RFEM_db/
 │   └── 2D_DB.json
 ├── 3D/                    # 3D block templates (.JS) + database
 │   └── 3D_DB.json
+├── docs/                  # Documentation
+│   └── architecture.md
 ├── config.ini.template    # Configuration template (copy to config.ini)
-├── requirements.txt       # Python dependencies
-└── architecture.md        # System architecture documentation
+└── requirements.txt       # Python dependencies
 ```
 
 ## 🚀 Getting Started
@@ -81,7 +82,7 @@ Dlubal_RFEM_db/
 
 5. **Run the application**
    ```bash
-   python web_server.py
+   python Athena_AI_Agent.py
    ```
    
    The browser will automatically open to `http://localhost:5000` when the server is ready.
@@ -121,7 +122,7 @@ The system uses a **multi-phase conversational AI pipeline**:
 3. **Collection** → Smart parameter extraction with natural language interpretation
 4. **Generation** → JS template manipulation with AST-based parameter injection
 
-See [`architecture.md`](architecture.md) for detailed diagrams.
+See [`architecture.md`](docs/architecture.md) for detailed diagrams.
 
 ## 🛡️ Security
 
