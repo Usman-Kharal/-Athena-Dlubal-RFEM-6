@@ -55,3 +55,17 @@ evaluation_report.html
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# ============================================================================
+# Legacy / backup code (not for public release)
+# ============================================================================
+legacy/
+
+# ============================================================================
+# Miscellaneous (not needed in repo)
+# ============================================================================
+*.zip
+git_ls.txt
+git_status_output.txt
+local_database/
+Git Deploy/
