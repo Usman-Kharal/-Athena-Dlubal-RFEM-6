@@ -114,15 +114,36 @@ Athena: ✅ Code generated! → 2D/001637_generated.JS
 | `server.address` | RFEM server address | Optional |
 
 ## 🏛️ Architecture
+ 
+ The system uses a **multi-phase conversational AI pipeline**:
+ 
+ ```mermaid
+ graph TD
+     Client["Web Client<br/>(Browser / HTML / JS)"]
+     WebServer["Web Server<br/>(Flask / Athena_AI_Agent.py)"]
+     CoreLogic["Core Logic Layer<br/>(shared_logic.py)"]
+     DB["Block Database<br/>(Class Instance)"]
+     JSONStore[("JSON Files<br/>(Data Persistance)")]
+     LLM["LLM Provider<br/>(OpenAI API)"]
+     FileSystem["File System<br/>(Scripts / Templates)"]
+ 
+     Client <-->|HTTP / WebSocket / JSON| WebServer
+     WebServer <-->|"Import & Call"| CoreLogic
+     CoreLogic -->|"Initialize & Query"| DB
+     DB -->|"Read on Startup"| JSONStore
+     CoreLogic <-->|"API Calls (HTTPS)"| LLM
+     CoreLogic <-->|"Read/Write"| FileSystem
+     
+     classDef app fill:#bbf,stroke:#333,stroke-width:2px;
+     classDef db fill:#bfb,stroke:#333,stroke-width:2px;
+     classDef external fill:#f9f,stroke:#333,stroke-width:2px;
+     
+     class WebServer,CoreLogic app;
+     class DB,JSONStore,FileSystem db;
+     class LLM external;
+ ```
 
-The system uses a **multi-phase conversational AI pipeline**:
-
-1. **Understanding** → LLM extracts intent (structure type, dimensionality, material)
-2. **Selection** → Database filtering + AI-guided block selection
-3. **Collection** → Smart parameter extraction with natural language interpretation
-4. **Generation** → JS template manipulation with AST-based parameter injection
-
-See [`architecture.md`](docs/architecture.md) for detailed diagrams.
+See [`architecture.md`](docs/architecture.md) for detailed diagrams and [`evaluation_results.md`](docs/evaluation_results.md) for performance metrics.
 
 ## 🛡️ Security
 
